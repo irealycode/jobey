@@ -12,8 +12,8 @@
 
 ## 🛠 Tech Stack
 
-- **Backend**: Django 4.x, Python 3.10+
-- **Database**: SQLite (default, can switch to PostgreSQL/MySQL)
+- **Backend**: Django, Python 3.10+
+- **Database**: SQLite
 - **Frontend**: HTML, Tailwind, Django templates
 
 ## 📦 Setup Instructions
