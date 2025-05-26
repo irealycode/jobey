@@ -1,5 +1,5 @@
 from django import forms
-from .models import Job, JobApplication, JobCategory
+from .models import Job, JobApplication
 
 class JobForm(forms.ModelForm):
     class Meta:
@@ -45,12 +45,7 @@ class JobSearchForm(forms.Form):
         'class': 'form-control'
     }))
     
-    category = forms.ModelChoiceField(
-        queryset=JobCategory.objects.all(),
-        required=False,
-        empty_label="All Categories",
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
+    
     
     job_type = forms.MultipleChoiceField(
         choices=Job.JOB_TYPE_CHOICES,
