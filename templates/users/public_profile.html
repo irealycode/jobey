@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.get_full_name|default:profile_user.username }} | JobBoard{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center">
+            {% if profile_user.avatar %}
+            <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}" class="h-24 w-24 rounded-full object-cover">
+            {% else %}
+            <div class="h-24 w-24 rounded-full bg-blue-500 flex items-center justify-center text-3xl font-bold">
+                {{ profile_user.username|first|upper }}
+            </div>
+            {% endif %}
+            <div class="ml-6">
+                <h1 class="text-3xl font-bold">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+                {% if profile_user.user_type == 'job_seeker' and profile.skills %}
+                <p class="text-xl text-blue-100 mt-2">{{ profile.skills|truncatewords:5 }}</p>
+                {% elif profile_user.user_type == 'employer' %}
+                <p class="text-xl text-blue-100 mt-2">{{ company.industry }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {% if profile_user.user_type == 'job_seeker' %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            {% if profile.experience %}
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Work Experience</h2>
+                <div class="prose prose-blue max-w-none">
+                    {{ profile.experience|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if profile.education %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Education</h2>
+                <div class="prose prose-blue max-w-none">
+                    {{ profile.education|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Skills</h2>
+                {% if profile.skills %}
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in profile.skills.split ',' %}
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        {{ skill.strip }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">No skills listed</p>
+                {% endif %}
+            </div>
+
+            {% if profile.website or profile.phone_number %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Contact Information</h2>
+                <div class="space-y-3">
+                    {% if profile.website %}
+                    <div class="flex items-center">
+                        <i class="fas fa-globe text-gray-400 w-5"></i>
+                        <a href="{{ profile.website }}" target="_blank" class="ml-2 text-blue-600 hover:text-blue-800">
+                            {{ profile.website|cut:"https://"|cut:"http://"|truncatechars:30 }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if profile.phone_number %}
+                    <div class="flex items-center">
+                        <i class="fas fa-phone text-gray-400 w-5"></i>
+                        <span class="ml-2">{{ profile.phone_number }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">About {{ company.name }}</h2>
+                <div class="prose prose-blue max-w-none">
+                    {{ company.description|linebreaks }}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Open Positions</h2>
+                {% if jobs %}
+                <div class="space-y-6">
+                    {% for job in jobs %}
+                    {% if job.is_active %}
+                    <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <a href="{% url 'job_detail' job.id %}" class="hover:text-blue-600">
+                                {{ job.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 mt-1">{{ job.location }}</p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="badge {% if job.job_type == 'full_time' %}badge-blue{% elif job.job_type == 'part_time' %}badge-green{% elif job.job_type == 'contract' %}badge-purple{% elif job.job_type == 'internship' %}badge-yellow{% else %}badge-red{% endif %}">
+                                {{ job.get_job_type_display }}
+                            </span>
+                            <span class="badge badge-blue">
+                                {{ job.get_experience_level_display }}
+                            </span>
+                        </div>
+                    
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">No open positions at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Company Information</h2>
+                <div class="space-y-4">
+                    {% if company.industry %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Industry</h3>
+                        <p class="mt-1 text-gray-900">{{ company.industry }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.size %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Company Size</h3>
+                        <p class="mt-1 text-gray-900">{{ company.size }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.founded_year %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Founded</h3>
+                        <p class="mt-1 text-gray-900">{{ company.founded_year }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.website %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Website</h3>
+                        <a href="{{ company.website }}" target="_blank" class="mt-1 text-blue-600 hover:text-blue-800">
+                            {{ company.website|cut:"https://"|cut:"http://"|truncatechars:30 }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,353 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Job Board{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004C99;
+            --secondary: #34C759;
+            --secondary-dark: #2A9F47;
+            --accent: #5856D6;
+            --accent-dark: #4240A8;
+            --success: #34C759;
+            --warning: #FF9500;
+            --error: #FF3B30;
+            --light-gray: #F2F2F7;
+            --mid-gray: #E5E5EA;
+            --dark-gray: #8E8E93;
+            --text: #1C1C1E;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+        }
+        
+        .btn-primary {
+            @apply px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md 
+                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                   focus:ring-opacity-50 transition-all duration-300;
+        }
+        
+        .btn-secondary {
+            @apply px-6 py-3 bg-green-500 text-white font-medium rounded-lg shadow-md 
+                   hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 
+                   focus:ring-opacity-50 transition-all duration-300;
+        }
+        
+        .btn-outline {
+            @apply px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-lg 
+                   hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                   focus:ring-opacity-50 transition-all duration-300;
+        }
+        
+        .form-control {
+            @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
+                   focus:ring-blue-500 focus:border-blue-500 transition-all duration-300;
+        }
+        
+        .form-label {
+            @apply block text-sm font-medium text-gray-700 mb-1;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg;
+        }
+        
+        .badge {
+            @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+        }
+        
+        .badge-blue {
+            @apply bg-blue-100 text-blue-800;
+        }
+        
+        .badge-green {
+            @apply bg-green-100 text-green-800;
+        }
+        
+        .badge-purple {
+            @apply bg-purple-100 text-purple-800;
+        }
+        
+        .badge-yellow {
+            @apply bg-yellow-100 text-yellow-800;
+        }
+        
+        .badge-red {
+            @apply bg-red-100 text-red-800;
+        }
+        
+        .dropdown-menu {
+            @apply absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
+        }
+        
+        .dropdown-item {
+            @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+    <header x-data="{ isOpen: false, userDropdown: false }" class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-600">
+                            <i class="fas fa-briefcase mr-2"></i>JobBoard
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{% url 'home' %}" class="border-transparent text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Home
+                        </a>
+                        <a href="{% url 'job_list' %}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Find Jobs
+                        </a>
+                        {% if user.is_authenticated and user.user_type == 'employer' %}
+                        <a href="{% url 'job_create' %}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Post a Job
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    {% if user.is_authenticated %}
+                    <div class="relative ml-3" x-data="{ open: false }">
+                        <div>
+                            <button @click="open = !open" type="button" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span class="sr-only">Open user menu</span>
+                                {% if user.avatar %}
+                                <img class="h-8 w-8 rounded-full" src="{{ user.avatar.url }}" alt="{{ user.username }}">
+                                {% else %}
+                                <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                {% endif %}
+                            </button>
+                        </div>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             @click.away="open = false"
+                             class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" 
+                             role="menu" 
+                             aria-orientation="vertical" 
+                             aria-labelledby="user-menu-button" 
+                             tabindex="-1">
+                            <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Dashboard</a>
+                            {% if user.user_type == 'employer' %}
+                            <a href="{% url 'edit_company' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Company Profile</a>
+                            {% else %}
+                            <a href="{% url 'edit_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Profile</a>
+                            {% endif %}
+                            <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sign out</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center">
+                        <a href="{% url 'account_login' %}" class="text-blue-600 hover:text-blue-800 px-3 py-2 rounded-md text-sm font-medium">Log in</a>
+                        <a href="{% url 'account_signup' %}" class="ml-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Sign up</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button @click="isOpen = !isOpen" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div x-show="isOpen" class="sm:hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="{% url 'home' %}" class="bg-blue-50 border-blue-500 text-blue-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="{% url 'job_list' %}" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Find Jobs</a>
+                {% if user.is_authenticated and user.user_type == 'employer' %}
+                <a href="{% url 'job_create' %}" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Post a Job</a>
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-4">
+                    <div class="flex-shrink-0">
+                        {% if user.avatar %}
+                        <img class="h-10 w-10 rounded-full" src="{{ user.avatar.url }}" alt="{{ user.username }}">
+                        {% else %}
+                        <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                            {{ user.username|first|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium text-gray-800">{{ user.username }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
+                    </div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Dashboard</a>
+                    {% if user.user_type == 'employer' %}
+                    <a href="{% url 'edit_company' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Company Profile</a>
+                    {% else %}
+                    <a href="{% url 'edit_profile' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Profile</a>
+                    {% endif %}
+                    <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Sign out</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center justify-center space-x-4 px-4">
+                    <a href="{% url 'account_login' %}" class="text-blue-600 hover:text-blue-800 block px-3 py-2 rounded-md text-base font-medium">Log in</a>
+                    <a href="{% url 'account_signup' %}" class="block w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">Sign up</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        {% for message in messages %}
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" 
+             class="fade-in rounded-md p-4 mb-4 {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    {% elif message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle text-red-500"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle text-blue-500"></i>
+                    {% endif %}
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm">{{ message }}</p>
+                </div>
+                <div class="ml-auto pl-3">
+                    <div class="-mx-1.5 -my-1.5">
+                        <button @click="show = false" class="inline-flex rounded-md p-1.5 
+                            {% if message.tags == 'success' %}text-green-500 hover:bg-green-100{% elif message.tags == 'error' %}text-red-500 hover:bg-red-100{% elif message.tags == 'warning' %}text-yellow-500 hover:bg-yellow-100{% else %}text-blue-500 hover:bg-blue-100{% endif %}">
+                            <span class="sr-only">Dismiss</span>
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">JobBoard</h3>
+                    <p class="text-gray-300">Connecting talented professionals with great opportunities.</p>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white">Home</a></li>
+                        <li><a href="{% url 'job_list' %}" class="text-gray-300 hover:text-white">Find Jobs</a></li>
+                        {% if user.is_authenticated and user.user_type == 'employer' %}
+                        <li><a href="{% url 'job_create' %}" class="text-gray-300 hover:text-white">Post a Job</a></li>
+                        {% endif %}
+                        <li><a href="#" class="text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-4">Contact Us</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> 123 Main Street, City, Country</li>
+                        <li><i class="fas fa-phone mr-2"></i> +1 234 567 890</li>
+                        <li><i class="fas fa-envelope mr-2"></i> contact@jobboard.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between">
+                <p class="text-gray-300">&copy; 2025 JobBoard. All rights reserved.</p>
+                <div class="mt-4 md:mt-0">
+                    <a href="#" class="text-gray-300 hover:text-white mr-4">Privacy Policy</a>
+                    <a href="#" class="text-gray-300 hover:text-white mr-4">Terms of Service</a>
+                    <a href="#" class="text-gray-300 hover:text-white">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ company.name }} | JobBoard{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center">
+            {% if company.logo %}
+            <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="h-24 w-24 rounded-lg object-contain bg-white p-2">
+            {% else %}
+            <div class="h-24 w-24 rounded-lg bg-white flex items-center justify-center text-blue-600 text-3xl font-bold">
+                {{ company.name|slice:":2"|upper }}
+            </div>
+            {% endif %}
+            <div class="ml-6">
+                <h1 class="text-3xl font-bold">{{ company.name }}</h1>
+                <p class="text-xl text-blue-100 mt-2">{{ company.industry }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">About {{ company.name }}</h2>
+                <div class="prose prose-blue max-w-none">
+                    {{ company.description|linebreaks }}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">Open Positions</h2>
+                    {% if user.is_authenticated and user == company.user %}
+                    <a href="{% url 'job_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                        <i class="fas fa-plus-circle mr-2"></i> Post New Job
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if jobs %}
+                <div class="space-y-6">
+                    {% for job in jobs %}
+                    {% if job.is_active %}
+                    <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <a href="{% url 'job_detail' job.id %}" class="hover:text-blue-600">
+                                        {{ job.title }}
+                                    </a>
+                                </h3>
+                                <p class="text-gray-600 mt-1">{{ job.location }}</p>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <span class="badge {% if job.job_type == 'full_time' %}badge-blue{% elif job.job_type == 'part_time' %}badge-green{% elif job.job_type == 'contract' %}badge-purple{% elif job.job_type == 'internship' %}badge-yellow{% else %}badge-red{% endif %}">
+                                        {{ job.get_job_type_display }}
+                                    </span>
+                                    <span class="badge badge-blue">
+                                        {{ job.get_experience_level_display }}
+                                    </span>
+                                    {% if job.salary_min or job.salary_max %}
+                                    <span class="badge badge-green">
+                                        {% if job.salary_min and job.salary_max %}
+                                        ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                                        {% elif job.salary_min %}
+                                        ${{ job.salary_min|floatformat:0 }}+
+                                        {% elif job.salary_max %}
+                                        Up to ${{ job.salary_max|floatformat:0 }}
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                                <p class="text-sm text-gray-500">
+                                    Posted {{ job.created_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-gray-600">{{ job.description|truncatewords:50 }}</p>
+                            <a href="{% url 'job_detail' job.id %}" class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800">
+                                View Details <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">No open positions at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Company Information</h2>
+                <div class="space-y-4">
+                    {% if company.industry %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Industry</h3>
+                        <p class="mt-1 text-gray-900">{{ company.industry }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.size %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Company Size</h3>
+                        <p class="mt-1 text-gray-900">{{ company.size }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.founded_year %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Founded</h3>
+                        <p class="mt-1 text-gray-900">{{ company.founded_year }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if company.website %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Website</h3>
+                        <a href="{{ company.website }}" target="_blank" class="mt-1 text-blue-600 hover:text-blue-800">
+                            {{ company.website|cut:"https://"|cut:"http://"|truncatechars:30 }}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Location</h3>
+                        <p class="mt-1 text-gray-900">{{ company.user.location|default:"Location not specified" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Quick Stats</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">{{ jobs.count }}</div>
+                        <div class="text-sm text-gray-600">Active Jobs</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600">
+                            {% with total_applications=0 %}
+                            {% for job in jobs %}
+                                {% with job_apps=job.applications.count %}
+                                    {% with total_applications=total_applications|add:job_apps %}{% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                            {{ total_applications }}
+                            {% endwith %}
+                        </div>
+                        <div class="text-sm text-gray-600">Applications</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

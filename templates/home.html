@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+
+{% block title %}JobBoard - Find Your Dream Job{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 fade-in">Find Your Dream Job Today</h1>
+            <p class="text-xl opacity-90 mb-8 fade-in">Thousands of jobs from top companies are waiting for you.</p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center slide-up">
+                <a href="{% url 'job_list' %}" class="px-8 py-4 bg-white text-blue-700 rounded-lg font-bold shadow-lg hover:bg-gray-100 transition-all duration-300">
+                    <i class="fas fa-search mr-2"></i> Find Jobs
+                </a>
+                {% if user.is_authenticated and user.user_type == 'employer' %}
+                <a href="{% url 'job_create' %}" class="px-8 py-4 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-all duration-300">
+                    <i class="fas fa-plus-circle mr-2"></i> Post a Job
+                </a>
+                {% else %}
+                <a href="{% url 'account_signup' %}" class="px-8 py-4 border-2 border-white text-white rounded-lg font-bold hover:bg-white hover:text-blue-700 transition-all duration-300">
+                    <i class="fas fa-user-plus mr-2"></i> Sign Up Now
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p class="max-w-2xl mx-auto text-lg text-gray-600">Our platform makes it easy for job seekers to find their next opportunity and for employers to find the perfect candidates.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-blue-50 rounded-xl p-8 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-16 h-16 mx-auto bg-blue-600 text-white rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-user-plus text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Create an Account</h3>
+                <p class="text-gray-600">Sign up as a job seeker or employer in just a few minutes and get started.</p>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-8 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-16 h-16 mx-auto bg-green-500 text-white rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-briefcase text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{% if user.is_authenticated and user.user_type == 'employer' %}Post Jobs{% else %}Browse Jobs{% endif %}</h3>
+                <p class="text-gray-600">{% if user.is_authenticated and user.user_type == 'employer' %}Create detailed job listings to attract the best candidates.{% else %}Search and filter job listings to find opportunities that match your skills.{% endif %}</p>
+            </div>
+            
+            <div class="bg-purple-50 rounded-xl p-8 text-center transform transition-all duration-300 hover:scale-105">
+                <div class="w-16 h-16 mx-auto bg-purple-600 text-white rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{% if user.is_authenticated and user.user_type == 'employer' %}Review Applications{% else %}Apply and Get Hired{% endif %}</h3>
+                <p class="text-gray-600">{% if user.is_authenticated and user.user_type == 'employer' %}Easily manage applications and find the perfect candidate.{% else %}Submit your application with just a few clicks and land your dream job.{% endif %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-gray-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Job Categories</h2>
+            <p class="max-w-2xl mx-auto text-lg text-gray-600">Browse jobs by category to find the perfect match for your skills and interests.</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-laptop-code text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Technology</h3>
+                <p class="text-gray-500 text-sm mt-1">452 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-chart-line text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Marketing</h3>
+                <p class="text-gray-500 text-sm mt-1">236 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-heartbeat text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Healthcare</h3>
+                <p class="text-gray-500 text-sm mt-1">382 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-palette text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Design</h3>
+                <p class="text-gray-500 text-sm mt-1">167 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-university text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Finance</h3>
+                <p class="text-gray-500 text-sm mt-1">215 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Education</h3>
+                <p class="text-gray-500 text-sm mt-1">124 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-utensils text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Hospitality</h3>
+                <p class="text-gray-500 text-sm mt-1">198 jobs available</p>
+            </a>
+            
+            <a href="#" class="bg-white rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-300">
+                <div class="w-14 h-14 mx-auto bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-ellipsis-h text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">More</h3>
+                <p class="text-gray-500 text-sm mt-1">View all categories</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="bg-blue-600 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">For Employers</h2>
+            <p class="max-w-2xl mx-auto text-lg opacity-90">Find the perfect candidates for your open positions with our powerful recruitment tools.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white bg-opacity-10 rounded-xl p-8 transition-all duration-300 hover:bg-opacity-20">
+                <div class="mb-4 text-3xl text-blue-200">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Post Jobs</h3>
+                <p class="opacity-90">Create detailed job listings to attract the best talent for your company.</p>
+            </div>
+            
+            <div class="bg-white bg-opacity-10 rounded-xl p-8 transition-all duration-300 hover:bg-opacity-20">
+                <div class="mb-4 text-3xl text-blue-200">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Manage Applications</h3>
+                <p class="opacity-90">Review and track applications with our easy-to-use dashboard.</p>
+            </div>
+            
+            <div class="bg-white bg-opacity-10 rounded-xl p-8 transition-all duration-300 hover:bg-opacity-20">
+                <div class="mb-4 text-3xl text-blue-200">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Company Profile</h3>
+                <p class="opacity-90">Showcase your brand and culture to attract top talent.</p>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            {% if user.is_authenticated and user.user_type == 'employer' %}
+            <a href="{% url 'job_create' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-700 rounded-lg font-bold shadow-lg hover:bg-gray-100 transition-all duration-300">
+                <i class="fas fa-plus-circle mr-2"></i> Post a Job Now
+            </a>
+            {% else %}
+            <a href="{% url 'account_signup' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-700 rounded-lg font-bold shadow-lg hover:bg-gray-100 transition-all duration-300">
+                <i class="fas fa-user-plus mr-2"></i> Register as an Employer
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Trusted by Leading Companies</h2>
+                <p class="text-lg text-gray-600 mb-6">Thousands of employers use our platform to find qualified candidates for their open positions.</p>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        </div>
+                        <p class="ml-3 text-gray-600">Access to thousands of qualified candidates</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        </div>
+                        <p class="ml-3 text-gray-600">Easy-to-use dashboard to manage all applications</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        </div>
+                        <p class="ml-3 text-gray-600">Personalized company profile to attract top talent</p>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                        </div>
+                        <p class="ml-3 text-gray-600">Detailed analytics and reporting on job performance</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="mt-10 lg:mt-0 grid grid-cols-2 gap-8">
+                <div class="col-span-1 flex justify-center py-8 px-8 bg-gray-50 rounded-xl">
+                    <div class="text-gray-400 font-bold text-xl">Company Logo</div>
+                </div>
+                <div class="col-span-1 flex justify-center py-8 px-8 bg-gray-50 rounded-xl">
+                    <div class="text-gray-400 font-bold text-xl">Company Logo</div>
+                </div>
+                <div class="col-span-1 flex justify-center py-8 px-8 bg-gray-50 rounded-xl">
+                    <div class="text-gray-400 font-bold text-xl">Company Logo</div>
+                </div>
+                <div class="col-span-1 flex justify-center py-8 px-8 bg-gray-50 rounded-xl">
+                    <div class="text-gray-400 font-bold text-xl">Company Logo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-gray-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Success Stories</h2>
+            <p class="max-w-2xl mx-auto text-lg text-gray-600">Hear what our users have to say about their experience with JobBoard.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl shadow-sm p-8 transition-all duration-300 hover:shadow-md">
+                <div class="text-yellow-400 mb-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"I found my dream job through JobBoard in just two weeks! The platform is so easy to use and has a great selection of opportunities."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold">JS</div>
+                    <div class="ml-4">
+                        <h4 class="text-lg font-semibold text-gray-900">John Smith</h4>
+                        <p class="text-gray-500">Software Developer</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-8 transition-all duration-300 hover:shadow-md">
+                <div class="text-yellow-400 mb-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"As an employer, JobBoard has been a game-changer for our recruitment process. We've found amazing talent and streamlined our hiring."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-semibold">SJ</div>
+                    <div class="ml-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Sarah Johnson</h4>
+                        <p class="text-gray-500">HR Manager</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-8 transition-all duration-300 hover:shadow-md">
+                <div class="text-yellow-400 mb-4">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"The job search filters are incredibly helpful. I was able to find positions that perfectly matched my skills and experience level."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold">AT</div>
+                    <div class="ml-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Alex Thompson</h4>
+                        <p class="text-gray-500">Marketing Specialist</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-blue-600 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6">Ready to Find Your Next Opportunity?</h2>
+        <p class="text-xl opacity-90 mb-8 max-w-3xl mx-auto">Join thousands of professionals who have found their dream jobs through JobBoard.</p>
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
+            <a href="{% url 'job_list' %}" class="px-8 py-4 bg-white text-blue-700 rounded-lg font-bold shadow-lg hover:bg-gray-100 transition-all duration-300">
+                <i class="fas fa-search mr-2"></i> Browse Jobs
+            </a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'account_signup' %}" class="px-8 py-4 border-2 border-white text-white rounded-lg font-bold hover:bg-white hover:text-blue-700 transition-all duration-300">
+                <i class="fas fa-user-plus mr-2"></i> Create an Account
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

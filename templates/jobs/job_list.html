@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Jobs | JobBoard{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold text-center mb-8">Find Your Perfect Job</h1>
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <form method="get" action="{% url 'job_list' %}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="id_keyword" class="block text-sm font-medium text-gray-700 mb-1">Keywords</label>
+                    <input type="text" name="keyword" id="id_keyword" value="{{ search_form.keyword.value|default:'' }}" placeholder="Job title, keywords, or company" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="id_location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input type="text" name="location" id="id_location" value="{{ search_form.location.value|default:'' }}" placeholder="City, state, or zip code" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="id_category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select name="category" id="id_category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if search_form.category.value|stringformat:"s" == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1 opacity-0">Search</label>
+                    <button type="submit" class="w-full px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        <i class="fas fa-search mr-2"></i> Search Jobs
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row">
+        <div class="md:w-1/4 pr-8">
+            <div class="sticky top-24 bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Filter Results</h2>
+                
+                <form method="get" action="{% url 'job_list' %}">
+                    {% if search_form.keyword.value %}
+                    <input type="hidden" name="keyword" value="{{ search_form.keyword.value }}">
+                    {% endif %}
+                    
+                    {% if search_form.location.value %}
+                    <input type="hidden" name="location" value="{{ search_form.location.value }}">
+                    {% endif %}
+                    
+                    {% if search_form.category.value %}
+                    <input type="hidden" name="category" value="{{ search_form.category.value }}">
+                    {% endif %}
+                    
+                    <div class="mb-6">
+                        <h3 class="text-md font-semibold text-gray-900 mb-3">Job Type</h3>
+                        <div class="space-y-2">
+                            {% for value, label in search_form.fields.job_type.choices %}
+                            <div class="flex items-center">
+                                <input type="checkbox" name="job_type" value="{{ value }}" id="id_job_type_{{ forloop.counter }}" 
+                                {% if value in search_form.job_type.value %}checked{% endif %}
+                                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="id_job_type_{{ forloop.counter }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-md font-semibold text-gray-900 mb-3">Experience Level</h3>
+                        <div class="space-y-2">
+                            {% for value, label in search_form.fields.experience_level.choices %}
+                            <div class="flex items-center">
+                                <input type="checkbox" name="experience_level" value="{{ value }}" id="id_experience_level_{{ forloop.counter }}" 
+                                {% if value in search_form.experience_level.value %}checked{% endif %}
+                                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <label for="id_experience_level_{{ forloop.counter }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-md font-semibold text-gray-900 mb-3">Minimum Salary</h3>
+                        <input type="number" name="min_salary" id="id_min_salary" value="{{ search_form.min_salary.value|default:'' }}" 
+                               placeholder="Min Salary" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 
+                               focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-md font-semibold text-gray-900 mb-3">Sort By</h3>
+                        <select name="sort_by" id="id_sort_by" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 
+                               focus:ring-blue-500 focus:border-blue-500">
+                            {% for value, label in search_form.fields.sort_by.choices %}
+                            <option value="{{ value }}" {% if search_form.sort_by.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Apply Filters
+                    </button>
+                    
+                    <a href="{% url 'job_list' %}" class="block w-full mt-3 text-center px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+                        Reset Filters
+                    </a>
+                </form>
+            </div>
+        </div>
+        
+        <div class="md:w-3/4 mt-8 md:mt-0">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">{{ page_obj.paginator.count }} Jobs Found</h2>
+                {% if user.is_authenticated and user.user_type == 'employer' %}
+                <a href="{% url 'job_create' %}" class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                    <i class="fas fa-plus-circle mr-1"></i> Post a Job
+                </a>
+                {% endif %}
+            </div>
+            
+            {% if jobs %}
+            <div class="space-y-6">
+                {% for job in jobs %}
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start">
+                            <!-- <div class="flex-shrink-0 h-12 w-12 rounded-md bg-gray-200 flex items-center justify-center mr-4">
+                                {% if job.company.logo %}
+                                <img src="{{ job.company.logo.url }}" alt="{{ job.company.name }}" class="h-10 w-10 object-contain">
+                                {% else %}
+                                <div class="text-gray-400 font-bold text-lg">{{ job.company.name|slice:":2"|upper }}</div>
+                                {% endif %}
+                            </div> -->
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-gray-900 hover:text-blue-600">
+                                    <a href="{% url 'job_detail' job.id %}">{{ job.title }}</a>
+                                </h3>
+                                <div class="text-sm text-gray-500 mt-1">
+                                    <a href="{% url 'company_detail' job.company.id %}" class="hover:text-blue-600">{{ job.company.name }}</a> • {{ job.location }}
+                                </div>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <span class="badge {% if job.job_type == 'full_time' %}badge-blue{% elif job.job_type == 'part_time' %}badge-green{% elif job.job_type == 'contract' %}badge-purple{% elif job.job_type == 'internship' %}badge-yellow{% else %}badge-red{% endif %}">
+                                        {{ job.get_job_type_display }}
+                                    </span>
+                                    <span class="badge badge-blue">
+                                        {{ job.get_experience_level_display }}
+                                    </span>
+                                    {% if job.salary_min or job.salary_max %}
+                                    <span class="badge badge-green">
+                                        {% if job.salary_min and job.salary_max %}
+                                        <strong>DH</strong>{{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                                        {% elif job.salary_min %}
+                                        <strong>DH</strong>{{ job.salary_min|floatformat:0 }}+
+                                        {% elif job.salary_max %}
+                                        Up to ${{ job.salary_max|floatformat:0 }}
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm text-gray-500">{{ job.created_at|date:"M d, Y" }}</p>
+                                <a href="{% url 'job_detail' job.id %}" class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                    View Details <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-gray-600 line-clamp-2">{{ job.description|slice:":200" }}{% if job.description|length > 200 %}...{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if is_paginated %}
+            <div class="mt-8 flex justify-center">
+                <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Previous</span>
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
+                        {{ i }}
+                    </span>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ i }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ i }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Next</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div class="text-gray-400 mb-4">
+                    <i class="fas fa-search text-5xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No jobs found</h3>
+                <p class="text-gray-600 mb-6">Try adjusting your search criteria or check back later for new opportunities.</p>
+                <a href="{% url 'job_list' %}" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Clear All Filters
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

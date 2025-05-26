@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Company Profile | JobBoard{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold">Company Profile</h1>
+        <p class="mt-2 text-blue-100">Update your company information to attract the best candidates.</p>
+    </div>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="rounded-md bg-red-50 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            There were errors with your submission
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700">Company Name</label>
+                <div class="mt-1">
+                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
+                           value="{{ form.name.value|default:'' }}"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.logo.id_for_label }}" class="block text-sm font-medium text-gray-700">Company Logo</label>
+                <div class="mt-1 flex items-center">
+                    {% if form.instance.logo %}
+                    <div class="mr-4">
+                        <img src="{{ form.instance.logo.url }}" alt="Current logo" class="h-12 w-12 object-contain">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="{{ form.logo.name }}" id="{{ form.logo.id_for_label }}" 
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300">
+                </div>
+                <p class="mt-2 text-sm text-gray-500">Recommended size: 200x200 pixels</p>
+            </div>
+
+            <div>
+                <label for="{{ form.website.id_for_label }}" class="block text-sm font-medium text-gray-700">Website</label>
+                <div class="mt-1">
+                    <input type="url" name="{{ form.website.name }}" id="{{ form.website.id_for_label }}"
+                           value="{{ form.website.value|default:'' }}"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                           placeholder="https://...">
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.industry.id_for_label }}" class="block text-sm font-medium text-gray-700">Industry</label>
+                <div class="mt-1">
+                    <input type="text" name="{{ form.industry.name }}" id="{{ form.industry.id_for_label }}"
+                           value="{{ form.industry.value|default:'' }}"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                           placeholder="e.g., Technology, Healthcare, Finance">
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.size.id_for_label }}" class="block text-sm font-medium text-gray-700">Company Size</label>
+                <div class="mt-1">
+                    <input type="text" name="{{ form.size.name }}" id="{{ form.size.id_for_label }}"
+                           value="{{ form.size.value|default:'' }}"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                           placeholder="e.g., 1-10 employees, 11-50 employees">
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.founded_year.id_for_label }}" class="block text-sm font-medium text-gray-700">Founded Year</label>
+                <div class="mt-1">
+                    <input type="number" name="{{ form.founded_year.name }}" id="{{ form.founded_year.id_for_label }}"
+                           value="{{ form.founded_year.value|default:'' }}"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                           placeholder="e.g., 2020">
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Company Description</label>
+                <div class="mt-1">
+                    <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" rows="4"
+                              class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                              placeholder="Tell potential candidates about your company...">{{ form.description.value|default:'' }}</textarea>
+                </div>
+            </div>
+
+            <div class="pt-5">
+                <div class="flex justify-end">
+                    <a href="{% url 'employer_dashboard' %}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
