@@ -67,8 +67,6 @@ class JobListView(ListView):
             elif sort_by == 'salary_low':
                 queryset = queryset.order_by('salary_min', 'salary_max')
             elif sort_by == 'relevant':
-                # If we had a relevance algorithm, it would go here
-                # For now, just use created_at as a fallback
                 queryset = queryset.order_by('-created_at')
         
         return queryset
@@ -87,7 +85,6 @@ class JobDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             if self.request.user.user_type == 'job_seeker':
-                # Check if user already applied
                 context['already_applied'] = JobApplication.objects.filter(
                     job=self.object, 
                     applicant=self.request.user
@@ -95,11 +92,9 @@ class JobDetailView(DetailView):
                 
                 context['application_form'] = JobApplicationForm()
             elif self.request.user.user_type == 'employer':
-                # Show applications if the employer owns this job
                 if self.object.employer == self.request.user:
                     context['applications'] = self.object.applications.all()
         
-        # Get related jobs
         related_jobs = Job.objects.filter(
             is_active=True
         ).exclude(id=self.object.id)[:4]
@@ -154,7 +149,6 @@ def apply_for_job(request, pk):
     
     job = get_object_or_404(Job, pk=pk)
     
-    # Check if user already applied
     if JobApplication.objects.filter(job=job, applicant=request.user).exists():
         messages.info(request, "You have already applied for this job.")
         return redirect('job_detail', pk=pk)
@@ -166,7 +160,6 @@ def apply_for_job(request, pk):
             application.job = job
             application.applicant = request.user
             
-            # If no resume uploaded, use the one from profile if available
             if not application.resume and hasattr(request.user, 'profile') and request.user.profile.resume:
                 application.resume = request.user.profile.resume
                 
@@ -185,7 +178,6 @@ class ApplicationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
     
     def test_func(self):
         application = self.get_object()
-        # Either the employer who posted the job or the applicant can view
         return (self.request.user == application.job.employer or 
                 self.request.user == application.applicant)
 
@@ -193,7 +185,6 @@ class ApplicationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
 def update_application_status(request, pk, status):
     application = get_object_or_404(JobApplication, pk=pk)
     
-    # Ensure only the employer who posted the job can update status
     if request.user != application.job.employer:
         messages.error(request, "You don't have permission to update this application.")
         return redirect('employer_dashboard')
@@ -207,7 +198,6 @@ def update_application_status(request, pk, status):
 def withdraw_application(request, pk):
     application = get_object_or_404(JobApplication, pk=pk)
     
-    # Ensure only the applicant can withdraw
     if request.user != application.applicant:
         messages.error(request, "You don't have permission to withdraw this application.")
         return redirect('job_seeker_dashboard')
