@@ -31,11 +31,11 @@
                 {% if job.salary_min or job.salary_max %}
                 <span class="badge badge-green">
                     {% if job.salary_min and job.salary_max %}
-                    ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                    <strong>DH</strong>{{ job.salary_min|floatformat:0 }} - <strong>DH</strong>{{ job.salary_max|floatformat:0 }}
                     {% elif job.salary_min %}
-                    ${{ job.salary_min|floatformat:0 }}+
+                    <strong>DH</strong>{{ job.salary_min|floatformat:0 }}+
                     {% elif job.salary_max %}
-                    Up to ${{ job.salary_max|floatformat:0 }}
+                    Up to <strong>DH</strong>{{ job.salary_max|floatformat:0 }}
                     {% endif %}
                 </span>
                 {% endif %}
