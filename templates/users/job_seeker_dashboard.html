@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard | JobBoard{% endblock %}
+{% block title %}Dashboard | Jobey{% endblock %}
 
 {% block content %}
 <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
@@ -33,16 +33,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
                 <h2 class="text-lg font-bold text-gray-900 mb-4">Profile Summary</h2>
                 <div class="space-y-4">
-                    {% if user.profile.skills %}
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500">Skills</h3>
-                        <div class="mt-1 flex flex-wrap gap-2">
-                            {% for skill in user.profile.skills.split ',' %}
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">{{ skill.strip }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
+                    
 
                     {% if user.profile.experience %}
                     <div>
@@ -87,7 +78,7 @@
                     </div>
                     <div class="text-center p-4 bg-green-50 rounded-lg">
                         <div class="text-2xl font-bold text-green-600">
-                            {{ applications.filter.status__in:'interviewed,offered'|length }}
+                            
                         </div>
                         <div class="text-sm text-gray-600">Interviews</div>
                     </div>
